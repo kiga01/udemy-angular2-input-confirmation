@@ -1,37 +1,30 @@
-var gulp = require('gulp');
+var gulp = require('gulp'),
+    minifycss = require('gulp-clean-css'),
+    compass = require('gulp-compass'),
+    ext_replace = require('gulp-ext-replace'),
+    imagemin = require('gulp-imagemin'),
+    sourcemaps = require('gulp-sourcemaps'),
+    typescript = require('gulp-typescript'),
+    jsuglify = require('gulp-uglify'),
+    gutil = require('gulp-util'),
+    precss = require('precss');
 
-var assetsDev = 'assets/';
-var assetsProd = 'src/';
-
-var appDev = 'dev/';
-var appProd = 'app/';
-
-/* Mixed */
-var ext_replace = require('gulp-ext-replace');
-
-/* CSS */
-var postcss = require('gulp-postcss');
-var sourcemaps = require('gulp-sourcemaps');
-var autoprefixer = require('autoprefixer');
-var precss = require('precss');
-var cssnano = require('cssnano');
-
-/* JS & TS */
-var jsuglify = require('gulp-uglify');
-var typescript = require('gulp-typescript');
-
-/* Images */
-var imagemin = require('gulp-imagemin');
+var assetsDev = 'assets/',
+    assetsProd = 'src/',
+    appDev = 'dev/',
+    appProd = 'app/';
 
 var tsProject = typescript.createProject('tsconfig.json');
 
 gulp.task('build-css', function () {
     return gulp.src(assetsDev + 'scss/*.scss')
-        .pipe(sourcemaps.init())
-        .pipe(postcss([precss, autoprefixer, cssnano]))
-        .pipe(sourcemaps.write())
-        .pipe(ext_replace('.css'))
-        .pipe(gulp.dest(assetsProd + 'css/'));
+        .pipe(compass({
+            sass: 'assets/scss',
+            style: 'expanded'
+        })
+            .on('error', gutil.log))
+        .pipe(minifycss())
+        .pipe(gulp.dest(assetsProd + 'css/'))
 });
 
 gulp.task('build-ts', function () {
